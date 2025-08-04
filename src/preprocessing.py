@@ -8,9 +8,6 @@ Procesamiento de datos: escalado, renombrado, descarte de columnas, etc.
 # asi copiaremos aqui el codigo resultante de LimpiezaEDA
 
 
-
-
-
 import pandas as pd
 import numpy as np
 import regex as re
@@ -105,7 +102,7 @@ def transform():
                         encontrado=True
                         break
                 if not encontrado:
-                    listado_estado.append(np.nan)
+                    listado_zip.append(np.nan)
             else:
                 listado_zip.append(i[1])
         
