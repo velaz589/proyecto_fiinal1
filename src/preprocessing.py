@@ -31,7 +31,7 @@ def transform():
     main_df()
     df=main_df()[-1]
     def transform1():
-        
+
         años=pd.to_datetime(main_df["Date received"],yearfirst=True)
         columna_mes=años.dt.month
 
@@ -123,5 +123,8 @@ def transform():
 
         return df,skrub.TableReport(df)
     transform4()
-    def transform5():
+    def transform5(df:pd.DataFrame)-> pd.DataFrame:
+        """vamos a realizar el encoding manual de las columnas que tiene nan ya que el label encoder 
+        no lo 
+        realiza correctamente, devuelve el dataframe con la columna arreglada, recibe un dataframe"""
         j
