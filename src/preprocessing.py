@@ -14,6 +14,12 @@ import regex as re
 import skrub
 
 def main_df():
+    '''la funcion toma el DF desde su carpeta 
+    devuelve el DF copia en formato df, 
+    el DF original 
+    el table report 
+    tambien recoge una segunda tabla con el codigo postal
+    devuelve una tupla(main_df,zip_code,tablereport maindf, lo mismo del zip_code, y el df copiado)'''
     main_df=pd.read_csv("../data/quejas-clientes.csv")
     zip_code=pd.read_csv("../data/zip_code.csv")
     df=main_df.copy()
@@ -111,6 +117,8 @@ def transform():
 
         return df,skrub.TableReport(df)
     transform4()
+    def transform5():
+        
 
 
 
