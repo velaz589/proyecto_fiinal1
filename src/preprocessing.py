@@ -19,7 +19,8 @@ def main_df():
     devuelve el DF copia en formato df, 
     el DF original 
     el table report 
-    tambien recoge una segunda tabla con el codigo postal
+    tambien recoge una segunda tabla con el codigo postal en principio esta indicado con un archivo. 
+
     devuelve una tupla(main_df,zip_code,tablereport maindf, lo mismo del zip_code, y el df copiado)'''
     main_df=pd.read_csv("../data/quejas-clientes.csv")
     zip_code=pd.read_csv("../data/zip_code.csv")
@@ -29,14 +30,15 @@ def main_df():
 
 
 def transform():
-    main_df()
+    main_df=main_df()[0]
     df=main_df()[-1]
-    def transform1():
+
+    def transform1(df:pd.DataFrame)-> pd.DataFrame:
 
         años=pd.to_datetime(main_df["Date received"],yearfirst=True)
         columna_mes=años.dt.month
 
-        df_fechas=pd.to_datetime(main_df[0]["Date sent to company"])-pd.to_datetime(main_df[0]["Date received"])
+        df_fechas=pd.to_datetime(main_df["Date sent to company"])-pd.to_datetime(main_df[0]["Date received"])
 
         df["Date received"]=df_fechas
         
@@ -45,7 +47,8 @@ def transform():
         df.drop('Date sent to company',inplace=True,axis=1)
         return df
     transform1(df)
-    def transform2():
+
+    def transform2(df:pd.DataFrame)-> pd.DataFrame:
         listatemp=[]
         for i in df["Timely response?"].values:
             if i == "Yes":
@@ -56,13 +59,15 @@ def transform():
         df["Timely response?"]=listatemp.astype(bool)
         return df
     transform2(df)
-    def transform3():
+
+    def transform3(df:pd.DataFrame)-> pd.DataFrame:
         df.drop("Unnamed: 0",axis=1,inplace=True)
         df.drop([11730, 13198], inplace=True)
         df.drop("Sub-issue",axis=1,inplace=True)
         return df
     transform3(df)
-    def transform4():
+
+    def transform4(df:pd.DataFrame)-> pd.DataFrame:
 
         columnas_a_cambiar=df[df.columns[4:6]]
 
@@ -124,6 +129,7 @@ def transform():
 
         return df,skrub.TableReport(df)
     transform4(df)
+
     def transform5(df:pd.DataFrame)-> pd.DataFrame:
         """vamos a realizar el encoding manual de las columnas que tiene nan ya que el label encoder 
         no lo 
@@ -145,6 +151,7 @@ def transform():
         df["Sub-product"]=listatemp
         return df
     transform5(df)
+
     def transform6(df:pd.DataFrame)-> pd.DataFrame:
         columna_tratar=df["Consumer disputed?"]
 
@@ -157,7 +164,8 @@ def transform():
 
         return df
     transform6(df)
-    def transform7():
+
+    def transform7(df:pd.DataFrame)-> pd.DataFrame:
         encoder = LabelEncoder()
         df['Product'] = encoder.fit_transform(df['Product'])
         df['Issue'] = encoder.fit_transform(df['Issue'])
@@ -167,3 +175,5 @@ def transform():
 
         return df
     transform7(df)
+
+    return df,skrub.TableReport(df)
