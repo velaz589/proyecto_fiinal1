@@ -31,9 +31,15 @@ def transform():
     main_df()
     df=main_df()[-1]
     def transform1():
+        
+        años=pd.to_datetime(main_df["Date received"],yearfirst=True)
+        columna_mes=años.dt.month
+
         df_fechas=pd.to_datetime(main_df[0]["Date sent to company"])-pd.to_datetime(main_df[0]["Date received"])
 
         df["Date received"]=df_fechas
+        
+        df['mes']=columna_mes
 
         df.drop('Date sent to company',inplace=True,axis=1)
         return df
@@ -118,7 +124,4 @@ def transform():
         return df,skrub.TableReport(df)
     transform4()
     def transform5():
-        
-
-
-
+        j
