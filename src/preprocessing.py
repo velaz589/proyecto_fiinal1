@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 import regex as re
 import skrub
+from sklearn.preprocessing import LabelEncoder
 
 def main_df():
     '''la funcion toma el DF desde su carpeta 
@@ -43,7 +44,7 @@ def transform():
 
         df.drop('Date sent to company',inplace=True,axis=1)
         return df
-    transform1()
+    transform1(df)
     def transform2():
         listatemp=[]
         for i in df["Timely response?"].values:
@@ -54,13 +55,13 @@ def transform():
         listatemp=pd.Series(listatemp)
         df["Timely response?"]=listatemp.astype(bool)
         return df
-    transform2()
+    transform2(df)
     def transform3():
         df.drop("Unnamed: 0",axis=1,inplace=True)
         df.drop([11730, 13198], inplace=True)
         df.drop("Sub-issue",axis=1,inplace=True)
         return df
-    transform3()
+    transform3(df)
     def transform4():
 
         columnas_a_cambiar=df[df.columns[4:6]]
@@ -122,9 +123,47 @@ def transform():
         df = df.dropna(subset=['State'])
 
         return df,skrub.TableReport(df)
-    transform4()
+    transform4(df)
     def transform5(df:pd.DataFrame)-> pd.DataFrame:
         """vamos a realizar el encoding manual de las columnas que tiene nan ya que el label encoder 
         no lo 
         realiza correctamente, devuelve el dataframe con la columna arreglada, recibe un dataframe"""
-        j
+        columna_tratar=df["Sub-product"]
+        lista_valores={}
+
+        for i in range(len(columna_tratar.unique())):
+            lista_valores[columna_tratar.unique()[i]]=i
+
+
+        lista_valores[np.nan]=np.nan
+
+        listatemp=[]
+        for x in columna_tratar:
+            listatemp.append(lista_valores[x])
+
+
+        df["Sub-product"]=listatemp
+        return df
+    transform5(df)
+    def transform6(df:pd.DataFrame)-> pd.DataFrame:
+        columna_tratar=df["Consumer disputed?"]
+
+        dicionario={np.nan:np.nan,"Yes":1,"No":0}
+        listatemp=[]
+        for x in columna_tratar:
+            listatemp.append(dicionario[x])
+
+        df["Consumer disputed?"]=listatemp
+
+        return df
+    transform6(df)
+    def transform7():
+        encoder = LabelEncoder()
+        df['Product'] = encoder.fit_transform(df['Product'])
+        df['Issue'] = encoder.fit_transform(df['Issue'])
+        df['State'] = encoder.fit_transform(df['State'])
+        df['Company'] = encoder.fit_transform(df['Company'])
+        df['Company response'] = encoder.fit_transform(df['Company response'])
+
+        return df
+    transform7(df)
