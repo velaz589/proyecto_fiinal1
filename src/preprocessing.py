@@ -14,7 +14,7 @@ import regex as re
 import skrub
 from sklearn.preprocessing import LabelEncoder
 
-def main_df():
+def main_df_fun():
     '''la funcion toma el DF desde su carpeta 
     devuelve el DF copia en formato df, 
     el DF original 
@@ -26,26 +26,26 @@ def main_df():
     zip_code=pd.read_csv("../data/zip_code.csv")
     df=main_df.copy()
 
-    return (main_df,zip_code,skrub.TableReport(main_df), skrub.TableReport(zip_code),df)
+    return (main_df,zip_code,df)
 
 
 def transform():
-    main_df=main_df()[0]
-    df=main_df()[-1]
-
+    main_df=main_df_fun()[0]
+    df=main_df_fun()[-1]
     def transform1(df:pd.DataFrame)-> pd.DataFrame:
 
         años=pd.to_datetime(main_df["Date received"],yearfirst=True)
         columna_mes=años.dt.month
 
-        df_fechas=pd.to_datetime(main_df["Date sent to company"])-pd.to_datetime(main_df[0]["Date received"])
+        df_fechas=pd.to_datetime(main_df["Date sent to company"])-pd.to_datetime(main_df["Date received"])
 
-        df["Date received"]=df_fechas
+        df["Date received"]=df_fechas.dt.days
         
         df['mes']=columna_mes
 
         df.drop('Date sent to company',inplace=True,axis=1)
         return df
+    
     transform1(df)
 
     def transform2(df:pd.DataFrame)-> pd.DataFrame:
@@ -71,7 +71,7 @@ def transform():
 
         columnas_a_cambiar=df[df.columns[4:6]]
 
-        zip_code=main_df()[1]
+        zip_code=main_df_fun()[1]
         state=[]
         zip=[]
         for i in zip_code.values:
@@ -175,5 +175,8 @@ def transform():
 
         return df
     transform7(df)
+    #def transform8(df):
+
 
     return df,skrub.TableReport(df)
+transform()
