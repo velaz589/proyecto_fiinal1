@@ -12,7 +12,8 @@ import pandas as pd
 import numpy as np
 import regex as re
 import skrub
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import 
+from sklearn.neighbors import KNeighborsClassifier
 
 def main_df_fun():
     '''la funcion toma el DF desde su carpeta 
@@ -125,9 +126,10 @@ def transform():
                 listado_zip.append(i[1])
         
         df["ZIP code"]=listado_zip
-        df = df.dropna(subset=['State'])
 
-        return df,skrub.TableReport(df)
+        df = df.dropna(subset=['State'],inplace=True)
+
+        return df
     transform4(df)
 
     def transform5(df:pd.DataFrame)-> pd.DataFrame:
@@ -175,8 +177,30 @@ def transform():
 
         return df
     transform7(df)
-    #def transform8(df):
+    def transform8(df):
+        df_1=df.drop(["Consumer disputed?"],axis=1)
+        # creamos unos subconjuntos donde dividimos los datos en train y test
+        train = df_1[df_1["Sub-product"].notna()]
+        test  = df_1[df_1["Sub-product"].isna()]
 
+        # Entrenar el modelo
+        knn_clf = KNeighborsClassifier(n_neighbors=3, metric='euclidean')
+        knn_clf.fit(
+            train[['Complaint ID', 'Product','Issue', 'State', 'ZIP code',
+                'Date received', 'Company', 'Company response', 'Timely response?','mes']],
+            train["Sub-product"]
+        )
+
+        # Predecir los valores faltantes
+        preds = knn_clf.predict(
+            test[['Complaint ID', 'Product','Issue', 'State', 'ZIP code',
+                'Date received', 'Company', 'Company response', 'Timely response?','mes']]
+        )
+
+        # Rellenar en el DataFrame original
+        df.loc[df_1["Sub-product"].isna(), "Sub-product"] = preds
+        return df
+    transform8(df)
 
     return df,skrub.TableReport(df)
 transform()
