@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 import regex as re
 import skrub
-from sklearn.preprocessing import 
+from sklearn.preprocessing import LabelEncoder
 from sklearn.neighbors import KNeighborsClassifier
 
 def main_df_fun():
@@ -33,6 +33,8 @@ def main_df_fun():
 def transform():
     main_df=main_df_fun()[0]
     df=main_df_fun()[-1]
+    encoder = LabelEncoder()
+
     def transform1(df:pd.DataFrame)-> pd.DataFrame:
 
         años=pd.to_datetime(main_df["Date received"],yearfirst=True)
@@ -168,7 +170,7 @@ def transform():
     transform6(df)
 
     def transform7(df:pd.DataFrame)-> pd.DataFrame:
-        encoder = LabelEncoder()
+        
         df['Product'] = encoder.fit_transform(df['Product'])
         df['Issue'] = encoder.fit_transform(df['Issue'])
         df['State'] = encoder.fit_transform(df['State'])
@@ -199,8 +201,19 @@ def transform():
 
         # Rellenar en el DataFrame original
         df.loc[df_1["Sub-product"].isna(), "Sub-product"] = preds
-        return df
+        return 
     transform8(df)
+    def destransform(df):
+        df_decoded=df
+
+        df_decoded['Product'] = encoder.inverse_transform(df['Product'])
+        df_decoded['Issue'] = encoder.inverse_transform(df['Issue'])
+        df_decoded['State'] = encoder.inverse_transform(df['State'])
+        df_decoded['Company'] = encoder.inverse_transform(df['Company'])
+        df_decoded['Company response'] = encoder.inverse_transform(df['Company response'])
+        
+
+
 
     return df,skrub.TableReport(df)
 transform()
