@@ -22,7 +22,7 @@ def main_df_fun():
     el table report 
     tambien recoge una segunda tabla con el codigo postal en principio esta indicado con un archivo. 
 
-    devuelve una tupla(main_df,zip_code,tablereport maindf, lo mismo del zip_code, y el df copiado)'''
+    devuelve una tupla(main_df,zip_code y el df copiado)'''
     main_df=pd.read_csv("../data/quejas-clientes.csv")
     zip_code=pd.read_csv("../data/zip_code.csv")
     df=main_df.copy()
@@ -30,9 +30,20 @@ def main_df_fun():
     return (main_df,zip_code,df)
 
 
-def transform():
+def transform(df_aportado=False,id=False):
+    """recibe un DF o no y devuelve el recibido transformado con el label encoder o si no recibe 
+    devuelve un DF con las quejas procesadas. 
+    devuelve una tupla con el df preparado y una TableReport de skrub. """
+
     main_df=main_df_fun()[0]
+
     df=main_df_fun()[-1]
+
+    if not df_aportado:
+        pass
+    else:
+        df=df_aportado
+
     encoder = LabelEncoder()
 
     def transform1(df:pd.DataFrame)-> pd.DataFrame:
@@ -199,9 +210,9 @@ def transform():
                 'Date received', 'Company', 'Company response', 'Timely response?','mes']]
         )
 
-        # Rellenar en el DataFrame original
+        # Rellenamos en el DataFrame original
         df.loc[df_1["Sub-product"].isna(), "Sub-product"] = preds
-        return 
+        return df
     transform8(df)
     def destransform(df):
         df_decoded=df
@@ -213,7 +224,7 @@ def transform():
         df_decoded['Company response'] = encoder.inverse_transform(df['Company response'])
         
 
-
+    if id:
+        df.drop("Complaint ID",axis=1,inplace=True)
 
     return df,skrub.TableReport(df)
-transform()

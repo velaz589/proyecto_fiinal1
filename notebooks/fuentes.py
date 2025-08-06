@@ -1,6 +1,10 @@
-import pandas as pd
-def main_df():
-    main_df=pd.read_csv("../data/quejas-clientes.csv")
-    return main_df
 
-main_df()
+"""este archivo sirve para importar las librerias mas habituales de golpe"""
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import skrub as skrub
+from sklearn.preprocessing import LabelEncoder
+from sklearn.neighbors import KNeighborsClassifier
+
