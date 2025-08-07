@@ -226,5 +226,7 @@ def transform(df_aportado=False,id=False):
 
     if id:
         df.drop("Complaint ID",axis=1,inplace=True)
+    
+    
 
     return df,skrub.TableReport(df)
