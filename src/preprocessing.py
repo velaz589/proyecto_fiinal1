@@ -230,3 +230,19 @@ def transform(df_aportado=False,id=False):
     
 
     return df,skrub.TableReport(df)
+
+def train_test(df:pd.DataFrame)-> pd.DataFrame:
+    from sklearn.model_selection import train_test_split
+    df=transform()[0]
+    temp=df[df["Consumer disputed?"].notna()]
+    temp=temp.sample(frac=1)
+    X=temp.drop("Consumer disputed?",axis=1)
+    y=temp["Consumer disputed?"]
+    X_train, X_test, y_train, y_test = ft.train_test_split(X,
+                                                    y,
+                                                    test_size = 0.20,
+                                                    random_state=55)
+    return X_train, X_test, y_train, y_test
+
+
+
