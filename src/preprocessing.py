@@ -168,50 +168,59 @@ def transform(df_aportado=False,id=False):
     transform5(df)
 
     def transform6(df:pd.DataFrame)-> pd.DataFrame:
-        columna_tratar=df["Consumer disputed?"]
+        try:
+            columna_tratar=df["Consumer disputed?"]
 
-        dicionario={np.nan:np.nan,"Yes":1,"No":0}
-        listatemp=[]
-        for x in columna_tratar:
-            listatemp.append(dicionario[x])
+            dicionario={np.nan:np.nan,"Yes":1,"No":0}
+            listatemp=[]
+            for x in columna_tratar:
+                listatemp.append(dicionario[x])
 
-        df["Consumer disputed?"]=listatemp
+            df["Consumer disputed?"]=listatemp
+        except:
+            print("error en el transform6")
 
         return df
     transform6(df)
 
     def transform7(df:pd.DataFrame)-> pd.DataFrame:
+        try:
         
-        df['Product'] = encoder.fit_transform(df['Product'])
-        df['Issue'] = encoder.fit_transform(df['Issue'])
-        df['State'] = encoder.fit_transform(df['State'])
-        df['Company'] = encoder.fit_transform(df['Company'])
-        df['Company response'] = encoder.fit_transform(df['Company response'])
+            df['Product'] = encoder.fit_transform(df['Product'])
+            df['Issue'] = encoder.fit_transform(df['Issue'])
+            df['State'] = encoder.fit_transform(df['State'])
+            df['Company'] = encoder.fit_transform(df['Company'])
+            df['Company response'] = encoder.fit_transform(df['Company response'])
+        except:
+            print("error en el transfrom7")
 
         return df
     transform7(df)
     def transform8(df):
-        df_1=df.drop(["Consumer disputed?"],axis=1)
-        # creamos unos subconjuntos donde dividimos los datos en train y test
-        train = df_1[df_1["Sub-product"].notna()]
-        test  = df_1[df_1["Sub-product"].isna()]
+        try:
+            df_1=df.drop(["Consumer disputed?"],axis=1)
+            # creamos unos subconjuntos donde dividimos los datos en train y test
+            train = df_1[df_1["Sub-product"].notna()]
+            test  = df_1[df_1["Sub-product"].isna()]
 
-        # Entrenar el modelo
-        knn_clf = KNeighborsClassifier(n_neighbors=3, metric='euclidean')
-        knn_clf.fit(
-            train[['Complaint ID', 'Product','Issue', 'State', 'ZIP code',
-                'Date received', 'Company', 'Company response', 'Timely response?','mes']],
-            train["Sub-product"]
-        )
+            # Entrenar el modelo
+            knn_clf = KNeighborsClassifier(n_neighbors=3, metric='euclidean')
+            knn_clf.fit(
+                train[['Complaint ID', 'Product','Issue', 'State', 'ZIP code',
+                    'Date received', 'Company', 'Company response', 'Timely response?','mes']],
+                train["Sub-product"]
+            )
 
-        # Predecir los valores faltantes
-        preds = knn_clf.predict(
-            test[['Complaint ID', 'Product','Issue', 'State', 'ZIP code',
-                'Date received', 'Company', 'Company response', 'Timely response?','mes']]
-        )
+            # Predecir los valores faltantes
+            preds = knn_clf.predict(
+                test[['Complaint ID', 'Product','Issue', 'State', 'ZIP code',
+                    'Date received', 'Company', 'Company response', 'Timely response?','mes']]
+            )
 
-        # Rellenamos en el DataFrame original
-        df.loc[df_1["Sub-product"].isna(), "Sub-product"] = preds
+            # Rellenamos en el DataFrame original
+            df.loc[df_1["Sub-product"].isna(), "Sub-product"] = preds
+        except:
+            print("error en el transform8")
         return df
     transform8(df)
     def destransform(df):
@@ -231,21 +240,30 @@ def transform(df_aportado=False,id=False):
 
     return df,skrub.TableReport(df)
 
-def train_test(df:pd.DataFrame)-> pd.DataFrame:
+def train_test(df:pd.DataFrame,barajado=False)-> pd.DataFrame:
 
     '''coge un dataframe limpiado y devuelve 4 DF en una tupla. 
     _train, X_test, y_train, y_test,temp, para_predecir'''
     from sklearn.model_selection import train_test_split
-    df=transform()[0]
-    temp=df[df["Consumer disputed?"].notna()]
-    para_predecir=df[df["Consumer disputed?"].isna()]
-    temp1=temp.sample(frac=1)
-    X=temp1.drop("Consumer disputed?",axis=1)
-    y=temp1["Consumer disputed?"]
-    X_train, X_test, y_train, y_test = train_test_split(X,
-                                                    y,
-                                                    test_size = 0.20,
-                                                    random_state=55)
+    try:
+        df=transform()[0]
+        temp=df[df["Consumer disputed?"].notna()]
+        para_predecir=df[df["Consumer disputed?"].isna()]
+        # esto es asi porque en los pipelines que estamos haciendo ya se puede utilizar el shuffle()
+        # lo que hace que no sea necesario aqui
+        if not barajado:
+            temp1=temp.sample(frac=1)
+        else:
+            pass
+        X=temp1.drop("Consumer disputed?",axis=1)
+        y=temp1["Consumer disputed?"]
+        
+        X_train, X_test, y_train, y_test = train_test_split(X,
+                                                        y,
+                                                        test_size = 0.20,
+                                                        random_state=55)
+    except:
+        print("Ha habido algun error")
     return X_train, X_test, y_train, y_test, temp, para_predecir
 
 
