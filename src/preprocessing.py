@@ -47,124 +47,140 @@ def transform(df_aportado=False,id=False):
     encoder = LabelEncoder()
 
     def transform1(df:pd.DataFrame)-> pd.DataFrame:
+        try:
 
-        años=pd.to_datetime(main_df["Date received"],yearfirst=True)
-        columna_mes=años.dt.month
+            años=pd.to_datetime(main_df["Date received"],yearfirst=True)
+            columna_mes=años.dt.month
 
-        df_fechas=pd.to_datetime(main_df["Date sent to company"])-pd.to_datetime(main_df["Date received"])
+            df_fechas=pd.to_datetime(main_df["Date sent to company"])-pd.to_datetime(main_df["Date received"])
 
-        df["Date received"]=df_fechas.dt.days
-        
-        df['mes']=columna_mes
+            df["Date received"]=df_fechas.dt.days
+            
+            df['mes']=columna_mes
 
-        df.drop('Date sent to company',inplace=True,axis=1)
-        return df
-    
+            df.drop('Date sent to company',inplace=True,axis=1)
+
+            return df
+        except:
+            print("error en transform1")
     transform1(df)
 
     def transform2(df:pd.DataFrame)-> pd.DataFrame:
-        listatemp=[]
-        for i in df["Timely response?"].values:
-            if i == "Yes":
-                listatemp.append(True)
-            else:
-                listatemp.append(False)
-        listatemp=pd.Series(listatemp)
-        df["Timely response?"]=listatemp.astype(bool)
-        return df
+        try:
+            listatemp=[]
+            for i in df["Timely response?"].values:
+                if i == "Yes":
+                    listatemp.append(True)
+                else:
+                    listatemp.append(False)
+            listatemp=pd.Series(listatemp)
+            df["Timely response?"]=listatemp.astype(bool)
+            return df
+        except:
+            print("error en tranform2")
     transform2(df)
 
     def transform3(df:pd.DataFrame)-> pd.DataFrame:
-        df.drop("Unnamed: 0",axis=1,inplace=True)
-        df.drop([11730, 13198], inplace=True)
-        df.drop("Sub-issue",axis=1,inplace=True)
-        return df
+        try:
+            df.drop("Unnamed: 0",axis=1,inplace=True)
+            df.drop([11730, 13198], inplace=True)
+            df.drop("Sub-issue",axis=1,inplace=True)
+            return df
+        except:
+            print("error en transform3")
     transform3(df)
 
     def transform4(df:pd.DataFrame)-> pd.DataFrame:
+        try:
 
-        columnas_a_cambiar=df[df.columns[4:6]]
+            columnas_a_cambiar=df[df.columns[4:6]]
 
-        zip_code=main_df_fun()[1]
-        state=[]
-        zip=[]
-        for i in zip_code.values:
-            resultado = re.findall(r"[A-Z]{2}", i[0])
-            state.append(resultado[0])
-            x=i[2].replace("to","< z <")
-            zip.append(x)
+            zip_code=main_df_fun()[1]
+            state=[]
+            zip=[]
+            for i in zip_code.values:
+                resultado = re.findall(r"[A-Z]{2}", i[0])
+                state.append(resultado[0])
+                x=i[2].replace("to","< z <")
+                zip.append(x)
 
-        zip_code=pd.DataFrame({'State': state, 'ZIP Codes': zip})
+            zip_code=pd.DataFrame({'State': state, 'ZIP Codes': zip})
 
-        listado_estado=[]
-        for i in columnas_a_cambiar.values:
-            if pd.isna(i[0]) and not pd.isna(i[1]):
-                encontrado=False
-                for x in zip_code.values:
-                    z=i[1]
-                    y=x[1]
-                    if eval(y):
-                        listado_estado.append(x[0])
-                        encontrado=True
-                        break
-                if not encontrado:
-                    listado_estado.append(np.nan)
-            else:
-                listado_estado.append(i[0])
-        df["State"]=listado_estado
+            listado_estado=[]
+            for i in columnas_a_cambiar.values:
+                if pd.isna(i[0]) and not pd.isna(i[1]):
+                    encontrado=False
+                    for x in zip_code.values:
+                        z=i[1]
+                        y=x[1]
+                        if eval(y):
+                            listado_estado.append(x[0])
+                            encontrado=True
+                            break
+                    if not encontrado:
+                        listado_estado.append(np.nan)
+                else:
+                    listado_estado.append(i[0])
+            df["State"]=listado_estado
 
-        import random
-        listado_zip=[]
-        for i in columnas_a_cambiar.values:
-            if pd.isna(i[1]) and not pd.isna(i[0]):
-                encontrado=False
-                for x in zip_code.values:
-
-                    
-                    if x[0]==i[0]:
-                        h=x[1]
-                        h=h.replace("z"," ")
-                        h=h.split("<")
-                        listatemp=[]
-                        n1=int(h[0].replace(" ",""))
-                        n2=int(h[-1].replace(" ",""))
+            import random
+            listado_zip=[]
+            for i in columnas_a_cambiar.values:
+                if pd.isna(i[1]) and not pd.isna(i[0]):
+                    encontrado=False
+                    for x in zip_code.values:
 
                         
-                        listado_zip.append(random.randint(n1,n2))
-                        encontrado=True
-                        break
-                if not encontrado:
-                    listado_zip.append(np.nan)
-            else:
-                listado_zip.append(i[1])
-        
-        df["ZIP code"]=listado_zip
+                        if x[0]==i[0]:
+                            h=x[1]
+                            h=h.replace("z"," ")
+                            h=h.split("<")
+                            listatemp=[]
+                            n1=int(h[0].replace(" ",""))
+                            n2=int(h[-1].replace(" ",""))
 
-        df = df.dropna(subset=['State'],inplace=True)
+                            
+                            listado_zip.append(random.randint(n1,n2))
+                            encontrado=True
+                            break
+                    if not encontrado:
+                        listado_zip.append(np.nan)
+                else:
+                    listado_zip.append(i[1])
+            
+            df["ZIP code"]=listado_zip
 
-        return df
+            df = df.dropna(subset=['State'],inplace=True)
+
+            return df
+        except:
+            print("error en transform4")
     transform4(df)
 
     def transform5(df:pd.DataFrame)-> pd.DataFrame:
         """vamos a realizar el encoding manual de las columnas que tiene nan ya que el label encoder 
         no lo 
         realiza correctamente, devuelve el dataframe con la columna arreglada, recibe un dataframe"""
-        columna_tratar=df["Sub-product"]
-        lista_valores={}
+        try:
+            columna_tratar=df["Sub-product"]
+            lista_valores={}
 
-        for i in range(len(columna_tratar.unique())):
-            lista_valores[columna_tratar.unique()[i]]=i
-
-
-        lista_valores[np.nan]=np.nan
-
-        listatemp=[]
-        for x in columna_tratar:
-            listatemp.append(lista_valores[x])
+            for i in range(len(columna_tratar.unique())):
+                lista_valores[columna_tratar.unique()[i]]=i
 
 
-        df["Sub-product"]=listatemp
-        return df
+            lista_valores[np.nan]=np.nan
+
+            listatemp=[]
+            for x in columna_tratar:
+                listatemp.append(lista_valores[x])
+
+
+            df["Sub-product"]=listatemp
+            return df
+        except:
+            print("error en transform5")
+
     transform5(df)
 
     def transform6(df:pd.DataFrame)-> pd.DataFrame:
@@ -184,8 +200,9 @@ def transform(df_aportado=False,id=False):
     transform6(df)
 
     def transform7(df:pd.DataFrame)-> pd.DataFrame:
+
         try:
-        
+
             df['Product'] = encoder.fit_transform(df['Product'])
             df['Issue'] = encoder.fit_transform(df['Issue'])
             df['State'] = encoder.fit_transform(df['State'])
@@ -196,6 +213,7 @@ def transform(df_aportado=False,id=False):
 
         return df
     transform7(df)
+
     def transform8(df):
         try:
             df_1=df.drop(["Consumer disputed?"],axis=1)
@@ -223,8 +241,9 @@ def transform(df_aportado=False,id=False):
             print("error en el transform8")
         return df
     transform8(df)
+
     def destransform(df):
-        df_decoded=df
+        df_decoded=df # esta acabado todavia este modulo.
 
         df_decoded['Product'] = encoder.inverse_transform(df['Product'])
         df_decoded['Issue'] = encoder.inverse_transform(df['Issue'])
@@ -246,7 +265,11 @@ def train_test(df:pd.DataFrame,barajado=False)-> pd.DataFrame:
     _train, X_test, y_train, y_test,temp, para_predecir'''
     from sklearn.model_selection import train_test_split
     try:
-        df=transform()[0]
+        if df:
+            df=df
+        else:
+            df=transform()[0]
+
         temp=df[df["Consumer disputed?"].notna()]
         para_predecir=df[df["Consumer disputed?"].isna()]
         # esto es asi porque en los pipelines que estamos haciendo ya se puede utilizar el shuffle()
