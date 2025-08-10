@@ -14,6 +14,8 @@ import regex as re
 import skrub
 from sklearn.preprocessing import LabelEncoder
 from sklearn.neighbors import KNeighborsClassifier
+import colorama
+colorama.init()
 
 def main_df_fun():
     '''la funcion toma el DF desde su carpeta 
@@ -62,7 +64,7 @@ def transform(df_aportado=False,id=False):
 
             return df
         except:
-            print("error en transform1")
+            print(Fore.RED +"error en transform1")
     transform1(df)
 
     def transform2(df:pd.DataFrame)-> pd.DataFrame:
@@ -259,16 +261,23 @@ def transform(df_aportado=False,id=False):
 
     return df,skrub.TableReport(df)
 
-def train_test(df:pd.DataFrame,barajado=False)-> pd.DataFrame:
 
-    '''coge un dataframe limpiado y devuelve 4 DF en una tupla. 
-    _train, X_test, y_train, y_test,temp, para_predecir'''
+
+
+def train_test(df:pd.DataFrame=False,barajado:bool=False,id:bool=False)-> dict:
+
+    '''coge un dataframe limpiado y devuelve un diccionario. 
+    X_train, X_test, y_train, y_test,temp, para_predecir'''
     from sklearn.model_selection import train_test_split
     try:
         if df:
             df=df
+            if id:
+                df.drop("Complaint ID",axis=1,inplace=True)
         else:
             df=transform()[0]
+            if id:
+                df.drop("Complaint ID",axis=1,inplace=True)
 
         temp=df[df["Consumer disputed?"].notna()]
         para_predecir=df[df["Consumer disputed?"].isna()]
@@ -280,14 +289,22 @@ def train_test(df:pd.DataFrame,barajado=False)-> pd.DataFrame:
             pass
         X=temp1.drop("Consumer disputed?",axis=1)
         y=temp1["Consumer disputed?"]
+
+        # haría falta quitar también los valores extraños. 
+        
+
+        
         
         X_train, X_test, y_train, y_test = train_test_split(X,
                                                         y,
                                                         test_size = 0.20,
                                                         random_state=55)
+                                    
+        return {'entrenamiento':(X_train, X_test, y_train, y_test),'temp': temp, 'df_faltantes':para_predecir}
     except:
-        print("Ha habido algun error")
-    return X_train, X_test, y_train, y_test, temp, para_predecir
+        print("Ha habido algun error!!")
+    
+
 
 
 

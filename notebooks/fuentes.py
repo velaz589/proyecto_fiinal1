@@ -12,4 +12,4 @@ from sklearn.model_selection import train_test_split
 import sys
 sys.path.append('../src')
 import preprocessing
-
+from sklearn.metrics import classification_report
