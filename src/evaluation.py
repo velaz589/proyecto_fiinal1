@@ -12,6 +12,7 @@ from sklearn.metrics import classification_report
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score,\
                             roc_auc_score, roc_curve, precision_recall_curve, confusion_matrix
 import fuentes as ft
+plt=ft.plt
 
 
 def guardar_modelo(nombre:str,modelo):
@@ -24,12 +25,13 @@ def recuperacion(nombre:str):
     with open(f'../models/{nombre}', "rb") as archivo_entrada:
         pipeline_importada = pickle.load(archivo_entrada)
     
-        print(pipeline_importada)
+        
+    return pipeline_importada
 
 
-def metricas(clf,y_test,predictions=False,X_test):
+def metricas(clf,y_test,X_test,predictions=False,auc:bool=False,precision:bool=False):
     print(classification_report(y_test,predictions))
-    if predictions:
+    if predictions not False
         preds=predictions
     else:
         preds = clf.predict(X_test)
@@ -45,12 +47,30 @@ def metricas(clf,y_test,predictions=False,X_test):
 
     y_pred_prob = clf.predict_proba(X_test)[:, 1]
 
-    fpr, tpr, thresholds=roc_curve(y_test,y_pred_prob)
-    ft.plt.plot(fpr, tpr)
-    ft.plt.xlim([0.0, 1.0])
-    ft.plt.ylim([0.0, 1.0])
-    ft.plt.title('ROC curve for client-complaint classifier')
-    ft.plt.xlabel('False Positive Rate (1 - Specificity)')
-    ft.plt.ylabel('True Positive Rate (Sensitivity)')
-    ft.plt.grid(True)
+    if auc:
+
+        fpr, tpr, thresholds=roc_curve(y_test,y_pred_prob)
+        ft.plt.plot(fpr, tpr)
+        ft.plt.xlim([0.0, 1.0])
+        ft.plt.ylim([0.0, 1.0])
+        ft.plt.title('ROC curve for client-complaint classifier')
+        ft.plt.xlabel('False Positive Rate (1 - Specificity)')
+        ft.plt.ylabel('True Positive Rate (Sensitivity)')
+        ft.plt.grid(True)
+        
+
+    elif precision:
+        precision, recall, thresholds = precision_recall_curve(y_test, y_pred_prob)
+        ft.plt.plot(recall, precision)
+        plt.xlim([0.0, 1.1])
+        plt.ylim([0.4, 1.1])
+        plt.title('Precision vs Recall curve')
+        plt.xlabel('Recall')
+        plt.ylabel('Precision')
+        plt.grid(True);
+
+    ft.plt.show()
+
+
+
     
