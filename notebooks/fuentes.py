@@ -11,6 +11,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 import sys
 sys.path.append('../src')
+sys.path.append('../models')
 import preprocessing
 from sklearn.metrics import classification_report
 import evaluation

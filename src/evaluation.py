@@ -31,7 +31,7 @@ def recuperacion(nombre:str):
 
 def metricas(clf,y_test,X_test,predictions=False,auc:bool=False,precision:bool=False):
     print(classification_report(y_test,predictions))
-    if predictions not False
+    if predictions:
         preds=predictions
     else:
         preds = clf.predict(X_test)

@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = "==3.12.11"
 dependencies = [
     "colorama>=0.4.6",
+    "gradio>=5.42.0",
     "imbalanced-learn>=0.12.4",
     "ipykernel>=6.30.0",
     "keras>=3.11.0",
