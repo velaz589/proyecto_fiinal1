@@ -32,7 +32,7 @@ def main_df_fun():
     return (main_df,zip_code,df)
 
 
-def transform(df_aportado=False,id=False):
+def transform(df_aportado=False,id=False,prediccion=False):
     """recibe un DF o no y devuelve el recibido transformado con el label encoder o si no recibe 
     devuelve un DF con las quejas procesadas. 
     devuelve una tupla con el df preparado y una TableReport de skrub. """
