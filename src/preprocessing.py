@@ -36,7 +36,7 @@ def transform(df_aportado=False,id=False,prediccion=False):
     """recibe un DF o no y devuelve el recibido transformado con el label encoder o si no recibe 
     devuelve un DF con las quejas procesadas. 
     devuelve una tupla con el df preparado y una TableReport de skrub. """
-
+    # ahora para la realizacion de la demostracion vamos a reutilizar la mayor parte de este codigo, sin embargo, 
     main_df=main_df_fun()[0]
 
     df=main_df_fun()[-1]
@@ -48,27 +48,35 @@ def transform(df_aportado=False,id=False,prediccion=False):
 
     encoder = LabelEncoder()
 
-    def transform1(df:pd.DataFrame)-> pd.DataFrame:
+    def transform1(df:pd.DataFrame,prediccion=False)-> pd.DataFrame:
+        # aqui lo que produramos es que si se esta haciendo la prediccion del modelo final ya sabemos que no habra 
+        # ni que hacer una nueva columna ni el resto de operaciones ya que ya vendrá con el modelo en el formato deseado. 
         try:
+            # esta tranformaicon busca parsear las fechas y luego sacar la diferencia entre el envio de las fechas. 
+            #en una columna dejara la diferencia en dias y creara una nueva columna con el mes en el que se recibieron.
+            if not prediccion:
+                años=pd.to_datetime(main_df["Date received"],yearfirst=True)
+                columna_mes=años.dt.month
 
-            años=pd.to_datetime(main_df["Date received"],yearfirst=True)
-            columna_mes=años.dt.month
+                df_fechas=pd.to_datetime(main_df["Date sent to company"])-pd.to_datetime(main_df["Date received"])
 
-            df_fechas=pd.to_datetime(main_df["Date sent to company"])-pd.to_datetime(main_df["Date received"])
+                df["Date received"]=df_fechas.dt.days
+                
+                df['mes']=columna_mes
 
-            df["Date received"]=df_fechas.dt.days
-            
-            df['mes']=columna_mes
+                df.drop('Date sent to company',inplace=True,axis=1)
 
-            df.drop('Date sent to company',inplace=True,axis=1)
-
-            return df
+                return df
+            else:
+                return df # haremso que retorne el df aunque sinninguna transformacion, podriamos saltarnos este paso.
         except:
             print(Fore.RED +"error en transform1")
-    transform1(df)
+    transform1(df,prediccion)
 
-    def transform2(df:pd.DataFrame)-> pd.DataFrame:
+    def transform2(df:pd.DataFrame,prediccion=False)-> pd.DataFrame:
+        # en este caso no necesitamos hacer lo de la prediccion ya que si tiene que darse esta tranformacion.
         try:
+            # en esta tranformacion buscamos realizar un cambio a numero de los datos sin usar un label encoder.
             listatemp=[]
             for i in df["Timely response?"].values:
                 if i == "Yes":
@@ -80,22 +88,30 @@ def transform(df_aportado=False,id=False,prediccion=False):
             return df
         except:
             print("error en tranform2")
-    transform2(df)
+    transform2(df,prediccion)
 
-    def transform3(df:pd.DataFrame)-> pd.DataFrame:
+    def transform3(df:pd.DataFrame,prediccion=False)-> pd.DataFrame:
+        # en este caso si que tenemos que introducir la prediccion ya que no habra un unnamed en nuestro df. 
+        # tampoco habra la filas esas.
+        # y tampoco habra un subissue. no obstante al igual que alguno anterior si la prediccion esta puesta no debera de pasar por aqui.
+
         try:
-            df.drop("Unnamed: 0",axis=1,inplace=True)
-            df.drop([11730, 13198], inplace=True)
-            df.drop("Sub-issue",axis=1,inplace=True)
-            return df
+            # si no hay una prediccion entonces que se ejecute el codigo sino pasamos.
+            if not prediccion:
+                df.drop("Unnamed: 0",axis=1,inplace=True)
+                df.drop([11730, 13198], inplace=True)
+                df.drop("Sub-issue",axis=1,inplace=True)
+                return df
+            else:
+                return df # haremso que retorne el df aunque sinninguna transformacion, podriamos saltarnos este paso.
         except:
             print("error en transform3")
-    transform3(df)
+    transform3(df,prediccion)
 
-    def transform4(df:pd.DataFrame)-> pd.DataFrame:
+    def transform4(df:pd.DataFrame,prediccion=False)-> pd.DataFrame:
         try:
-
             columnas_a_cambiar=df[df.columns[4:6]]
+            
 
             zip_code=main_df_fun()[1]
             state=[]
@@ -157,33 +173,73 @@ def transform(df_aportado=False,id=False,prediccion=False):
             return df
         except:
             print("error en transform4")
-    transform4(df)
+    transform4(df,prediccion)
 
-    def transform5(df:pd.DataFrame)-> pd.DataFrame:
+    def transform5(df:pd.DataFrame,prediccion=False)-> pd.DataFrame:
         """vamos a realizar el encoding manual de las columnas que tiene nan ya que el label encoder 
         no lo 
         realiza correctamente, devuelve el dataframe con la columna arreglada, recibe un dataframe"""
+        # aqui el problema que tenemos es que va a coger los datos del supuesto df, pero claro ahora el df consta de una sola fila 
+        # por lo que algunas de las operaciones aqui no seria posibles.
+        # vamos a tratar de solucionarlo. 
         try:
-            columna_tratar=df["Sub-product"]
-            lista_valores={}
+            if not prediccion:
+                columna_tratar=df["Sub-product"]
+                lista_valores={}
 
-            for i in range(len(columna_tratar.unique())):
-                lista_valores[columna_tratar.unique()[i]]=i
-
-
-            lista_valores[np.nan]=np.nan
-
-            listatemp=[]
-            for x in columna_tratar:
-                listatemp.append(lista_valores[x])
+                for i in range(len(columna_tratar.unique())):
+                    lista_valores[columna_tratar.unique()[i]]=i
 
 
-            df["Sub-product"]=listatemp
+                lista_valores[np.nan]=np.nan
+
+                listatemp=[]
+                for x in columna_tratar:
+                    listatemp.append(lista_valores[x])
+
+
+                df["Sub-product"]=listatemp
+
+                return df
+
+            else: # ahora vamos a ver que sucede si tenemos activada la prediccion
+                # en este caso necesitamos que igualmente contar con una lista de valores pero con los valores originales por lo que necesitaremos volver a ejecutar 
+                # todos los pasos anteriores como si no hubiera prediccion y luego pasarlo para ver que tendriamos que poner en la linea que se introducira.
+                main_df=main_df_fun()[0]
+                df_temp=main_df_fun()[-1]
+                # cambiamos para que se ejecute todo como si no fuera a ser la prediccion.
+                df_temp=main_df_fun()[-1]
+                df_temp=transform1(df_temp)
+                df_temp=transform2(df_temp)
+                df_temp=transform3(df_temp)
+                df_temp=transform4(df_temp)
+                columna_tratar=df_temp["Sub-product"]
+
+                lista_valores={}
+
+                for i in range(len(columna_tratar.unique())):
+                    lista_valores[columna_tratar.unique()[i]]=i
+
+
+                lista_valores[np.nan]=np.nan
+
+                listatemp=[]
+
+                columna_tratar=df["Sub-product"] # este df ahora es el que ha venido con las prediccion = True.
+                for x in columna_tratar:
+                    listatemp.append(lista_valores[x])
+
+
+                df["Sub-product"]=listatemp
+
+
+                
+
             return df
         except:
             print("error en transform5")
 
-    transform5(df)
+    transform5(df,prediccion)
 
     def transform6(df:pd.DataFrame)-> pd.DataFrame:
         try:
