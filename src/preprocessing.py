@@ -109,6 +109,8 @@ def transform(df_aportado=False,id=False,prediccion=False):
     transform3(df,prediccion)
 
     def transform4(df:pd.DataFrame,prediccion=False)-> pd.DataFrame:
+        #aqui tambien tendriamos problemas ya que no hace falta realizar los cambios en el data frame.
+        # si lo que buscamos es actualizar la prediccion. aunque seria interesante que lo pudieramos sacar por el estado. 
         try:
             columnas_a_cambiar=df[df.columns[4:6]]
             
@@ -139,7 +141,7 @@ def transform(df_aportado=False,id=False,prediccion=False):
                         listado_estado.append(np.nan)
                 else:
                     listado_estado.append(i[0])
-            df["State"]=listado_estado
+            
 
             import random
             listado_zip=[]
@@ -165,14 +167,21 @@ def transform(df_aportado=False,id=False,prediccion=False):
                         listado_zip.append(np.nan)
                 else:
                     listado_zip.append(i[1])
-            
-            df["ZIP code"]=listado_zip
 
-            df = df.dropna(subset=['State'],inplace=True)
+            df["ZIP code"]=listado_zip
+            
+            
+            
+            if prediccion:
+                pass
+            else:
+            
+                df = df.dropna(subset=['State'],inplace=True)
 
             return df
         except:
             print("error en transform4")
+            raise e
     transform4(df,prediccion)
 
     def transform5(df:pd.DataFrame,prediccion=False)-> pd.DataFrame:
@@ -222,13 +231,15 @@ def transform(df_aportado=False,id=False,prediccion=False):
 
 
                 lista_valores[np.nan]=np.nan
+                # hasta aqui hemos conseguido un dict con la informacion total del dataframe que luego aplicaremos a una unica fila del
+                # df 
 
                 listatemp=[]
 
                 columna_tratar=df["Sub-product"] # este df ahora es el que ha venido con las prediccion = True.
                 for x in columna_tratar:
                     listatemp.append(lista_valores[x])
-
+                # realmente solo tiene una fila podriamos prescindir del bucle for. 
 
                 df["Sub-product"]=listatemp
 
@@ -242,6 +253,7 @@ def transform(df_aportado=False,id=False,prediccion=False):
     transform5(df,prediccion)
 
     def transform6(df:pd.DataFrame)-> pd.DataFrame:
+        # en este caso siempre se hara la transformacion de esta forma.
         try:
             columna_tratar=df["Consumer disputed?"]
 
@@ -257,48 +269,112 @@ def transform(df_aportado=False,id=False,prediccion=False):
         return df
     transform6(df)
 
-    def transform7(df:pd.DataFrame)-> pd.DataFrame:
+    def transform7(df:pd.DataFrame,prediccion=False)-> pd.DataFrame:
+        # en este caso deberemos hacer lo mismo pero nos pasa el mismo problema que en el paso 5 que deberemso de realizar el fit por un lado y el transforma
+        # de la columna por otro. 
 
         try:
+            if not prediccion:
 
-            df['Product'] = encoder.fit_transform(df['Product'])
-            df['Issue'] = encoder.fit_transform(df['Issue'])
-            df['State'] = encoder.fit_transform(df['State'])
-            df['Company'] = encoder.fit_transform(df['Company'])
-            df['Company response'] = encoder.fit_transform(df['Company response'])
+                df['Product'] = encoder.fit_transform(df['Product'])
+                df['Issue'] = encoder.fit_transform(df['Issue'])
+                df['State'] = encoder.fit_transform(df['State'])
+                df['Company'] = encoder.fit_transform(df['Company'])
+                df['Company response'] = encoder.fit_transform(df['Company response'])
+            else:
+            # si prediccion esta activo el comportacion debera ser el siguiente.
+            # primero formar el df origfinal hasta este punto para hacer el fit. 
+                main_df=main_df_fun()[0]
+                df_temp=main_df_fun()[-1]
+                # cambiamos para que se ejecute todo como si no fuera a ser la prediccion.
+                df_temp=main_df_fun()[-1]
+                df_temp=transform1(df_temp)
+                df_temp=transform2(df_temp)
+                df_temp=transform3(df_temp)
+                df_temp=transform4(df_temp)
+                df_temp=transform5(df_temp)
+                df_temp=transform6(df_temp)
+                # ahora el df_temp es el df original sin lo de prediccion. 
+                df_temp['Product'] = encoder.fit(df_temp['Product'])
+                df_temp['Issue'] = encoder.fit(df_temp['Issue'])
+                df_temp['State'] = encoder.fit(df_temp['State'])
+                df_temp['Company'] = encoder.fit(df_temp['Company'])
+                df_temp['Company response'] = encoder.fit(df_temp['Company response'])
+                # ahora realizaremos el transform sobre la linea que tenemos de df. 
+                df['Product'] = encoder.transform(df['Product'])
+                df['Issue'] = encoder.transform(df['Issue'])
+                df['State'] = encoder.transform(df['State'])
+                df['Company'] = encoder.transform(df['Company'])
+                df['Company response'] = encoder.transform(df['Company response'])
+                # con esto ya tendriamos aplicado todos los encoders a la linea. 
+
         except:
             print("error en el transfrom7")
 
         return df
-    transform7(df)
+    transform7(df,prediccion)
 
     def transform8(df):
         try:
-            df_1=df.drop(["Consumer disputed?"],axis=1)
-            # creamos unos subconjuntos donde dividimos los datos en train y test
-            train = df_1[df_1["Sub-product"].notna()]
-            test  = df_1[df_1["Sub-product"].isna()]
+            if not prediccion:
+                df_1=df.drop(["Consumer disputed?"],axis=1)
+                # creamos unos subconjuntos donde dividimos los datos en train y test
+                train = df_1[df_1["Sub-product"].notna()]
+                test  = df_1[df_1["Sub-product"].isna()]
 
-            # Entrenar el modelo
-            knn_clf = KNeighborsClassifier(n_neighbors=3, metric='euclidean')
-            knn_clf.fit(
-                train[['Complaint ID', 'Product','Issue', 'State', 'ZIP code',
-                    'Date received', 'Company', 'Company response', 'Timely response?','mes']],
-                train["Sub-product"]
-            )
+                # Entrenar el modelo
+                knn_clf = KNeighborsClassifier(n_neighbors=3, metric='euclidean')
+                knn_clf.fit(
+                    train[['Complaint ID', 'Product','Issue', 'State', 'ZIP code',
+                        'Date received', 'Company', 'Company response', 'Timely response?','mes']],
+                    train["Sub-product"]
+                )
 
-            # Predecir los valores faltantes
-            preds = knn_clf.predict(
-                test[['Complaint ID', 'Product','Issue', 'State', 'ZIP code',
-                    'Date received', 'Company', 'Company response', 'Timely response?','mes']]
-            )
+                # Predecir los valores faltantes
+                preds = knn_clf.predict(
+                    test[['Complaint ID', 'Product','Issue', 'State', 'ZIP code',
+                        'Date received', 'Company', 'Company response', 'Timely response?','mes']]
+                )
 
-            # Rellenamos en el DataFrame original
-            df.loc[df_1["Sub-product"].isna(), "Sub-product"] = preds
+                # Rellenamos en el DataFrame original
+                df.loc[df_1["Sub-product"].isna(), "Sub-product"] = preds
+            else:
+                pass
         except:
             print("error en el transform8")
         return df
     transform8(df)
+
+
+
+    def ultima_predecir(df):
+        # esta ultima tranformacion es para rellenar los huecos que no se hubieran rellenado en el marco de meter las cosas en el programa.
+        main_df=main_df_fun()[0]
+        df_temp=main_df_fun()[-1]
+        # cambiamos para que se ejecute todo como si no fuera a ser la prediccion.
+        df_temp=main_df_fun()[-1]
+        df_temp=transform1(df_temp)
+        df_temp=transform2(df_temp)
+        df_temp=transform3(df_temp)
+        df_temp=transform4(df_temp)
+        df_temp=transform5(df_temp)
+        df_temp=transform6(df_temp)
+        df_temp=transform7(df_temp)
+        df_temp=transform8(df_temp)
+        # lo que queremos ahora es que el programa que va a hacer la demostracion pueda predecir valores faltantes. 
+
+        
+        
+        '''knn_clf = KNeighborsClassifier(n_neighbors=3, metric='euclidean')
+        knn_clf.fit(
+            train[['Complaint ID', 'Product','Issue', 'State', 'ZIP code',
+                    'Date received', 'Company', 'Company response', 'Timely response?','mes']],
+            train["Sub-product"])'''
+        return df_temp
+    if prediccion:
+        ultima_predecir(df)
+
+
 
     def destransform(df):
         df_decoded=df # esta acabado todavia este modulo.
