@@ -41,10 +41,9 @@ def transform(df_aportado=False,id=False,prediccion=False):
 
     df=main_df_fun()[-1]
 
-    if not df_aportado:
-        pass
-    else:
-        df=df_aportado
+    if df_aportado is not False and df_aportado is not None:
+        df = df_aportado
+
 
     encoder = LabelEncoder()
 
@@ -181,7 +180,7 @@ def transform(df_aportado=False,id=False,prediccion=False):
             return df
         except:
             print("error en transform4")
-            raise e
+            
     transform4(df,prediccion)
 
     def transform5(df:pd.DataFrame,prediccion=False)-> pd.DataFrame:
@@ -191,64 +190,68 @@ def transform(df_aportado=False,id=False,prediccion=False):
         # aqui el problema que tenemos es que va a coger los datos del supuesto df, pero claro ahora el df consta de una sola fila 
         # por lo que algunas de las operaciones aqui no seria posibles.
         # vamos a tratar de solucionarlo. 
-        try:
-            if not prediccion:
-                columna_tratar=df["Sub-product"]
-                lista_valores={}
+        
+        if not prediccion:
+            columna_tratar=df["Sub-product"]
+            lista_valores={}
 
-                for i in range(len(columna_tratar.unique())):
-                    lista_valores[columna_tratar.unique()[i]]=i
-
-
-                lista_valores[np.nan]=np.nan
-
-                listatemp=[]
-                for x in columna_tratar:
-                    listatemp.append(lista_valores[x])
+            for i in range(len(columna_tratar.unique())):
+                lista_valores[columna_tratar.unique()[i]]=i
 
 
-                df["Sub-product"]=listatemp
+            lista_valores[np.nan]=np.nan
 
-                return df
-
-            else: # ahora vamos a ver que sucede si tenemos activada la prediccion
-                # en este caso necesitamos que igualmente contar con una lista de valores pero con los valores originales por lo que necesitaremos volver a ejecutar 
-                # todos los pasos anteriores como si no hubiera prediccion y luego pasarlo para ver que tendriamos que poner en la linea que se introducira.
-                main_df=main_df_fun()[0]
-                df_temp=main_df_fun()[-1]
-                # cambiamos para que se ejecute todo como si no fuera a ser la prediccion.
-                df_temp=main_df_fun()[-1]
-                df_temp=transform1(df_temp)
-                df_temp=transform2(df_temp)
-                df_temp=transform3(df_temp)
-                df_temp=transform4(df_temp)
-                columna_tratar=df_temp["Sub-product"]
-
-                lista_valores={}
-
-                for i in range(len(columna_tratar.unique())):
-                    lista_valores[columna_tratar.unique()[i]]=i
+            listatemp=[]
+            for x in columna_tratar:
+                listatemp.append(lista_valores[x])
 
 
-                lista_valores[np.nan]=np.nan
-                # hasta aqui hemos conseguido un dict con la informacion total del dataframe que luego aplicaremos a una unica fila del
-                # df 
-
-                listatemp=[]
-
-                columna_tratar=df["Sub-product"] # este df ahora es el que ha venido con las prediccion = True.
-                for x in columna_tratar:
-                    listatemp.append(lista_valores[x])
-                # realmente solo tiene una fila podriamos prescindir del bucle for. 
-
-                df["Sub-product"]=listatemp
-
-
-                
+            df["Sub-product"]=listatemp
 
             return df
-        except:
-            print("error en transform5")
+
+        else: # ahora vamos a ver que sucede si tenemos activada la prediccion
+            # en este caso necesitamos que igualmente contar con una lista de valores pero con los valores originales por lo que necesitaremos volver a ejecutar 
+            # todos los pasos anteriores como si no hubiera prediccion y luego pasarlo para ver que tendriamos que poner en la linea que se introducira.
+            main_df=main_df_fun()[0]
+            df_temp=main_df_fun()[-1]
+            # cambiamos para que se ejecute todo como si no fuera a ser la prediccion.
+            df_temp=main_df_fun()[-1]
+            df_temp=transform1(df_temp)
+            print("TRanform1\n",df_temp)
+            df_temp=transform2(df_temp)
+            print("TRanform2\n",df_temp)
+            df_temp=transform3(df_temp)
+            print("TRanform3\n",df_temp)
+            df_temp=transform4(df_temp)
+            print("TRanform4\n",df_temp)
+            columna_tratar=df_temp["Sub-product"]
+
+            lista_valores={}
+
+            for i in range(len(columna_tratar.unique())):
+                lista_valores[columna_tratar.unique()[i]]=i
+
+
+            lista_valores[np.nan]=np.nan
+            # hasta aqui hemos conseguido un dict con la informacion total del dataframe que luego aplicaremos a una unica fila del
+            # df 
+
+            listatemp=[]
+
+            columna_tratar=df["Sub-product"] # este df ahora es el que ha venido con las prediccion = True.
+            for x in columna_tratar:
+                listatemp.append(lista_valores[x])
+            # realmente solo tiene una fila podriamos prescindir del bucle for. 
+
+            df["Sub-product"]=listatemp
+
+
+            
+
+        return df
+    
+        print("error en transform5")
 
     transform5(df,prediccion)
 
