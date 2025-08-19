@@ -50,14 +50,27 @@ def transform(df_aportado=False,id=False,prediccion=False):
     def transform1(df:pd.DataFrame,prediccion=False)-> pd.DataFrame:
         # aqui lo que produramos es que si se esta haciendo la prediccion del modelo final ya sabemos que no habra 
         # ni que hacer una nueva columna ni el resto de operaciones ya que ya vendrá con el modelo en el formato deseado. 
-        try:
-            # esta tranformaicon busca parsear las fechas y luego sacar la diferencia entre el envio de las fechas. 
-            #en una columna dejara la diferencia en dias y creara una nueva columna con el mes en el que se recibieron.
-            if not prediccion:
-                años=pd.to_datetime(main_df["Date received"],yearfirst=True)
+        # esta tranformaicon busca parsear las fechas y luego sacar la diferencia entre el envio de las fechas. 
+        #en una columna dejara la diferencia en dias y creara una nueva columna con el mes en el que se recibieron.
+        if not prediccion:
+            años=pd.to_datetime(main_df["Date received"],yearfirst=True)
+            columna_mes=años.dt.month
+
+            df_fechas=pd.to_datetime(main_df["Date sent to company"])-pd.to_datetime(main_df["Date received"])
+
+            df["Date received"]=df_fechas.dt.days
+            
+            df['mes']=columna_mes
+
+            df.drop('Date sent to company',inplace=True,axis=1)
+
+            return df
+        else:
+            if "Date sent to company" in df.columns:
+                años=pd.to_datetime(df["Date received"],yearfirst=True)
                 columna_mes=años.dt.month
 
-                df_fechas=pd.to_datetime(main_df["Date sent to company"])-pd.to_datetime(main_df["Date received"])
+                df_fechas=pd.to_datetime(df["Date sent to company"])-pd.to_datetime(df["Date received"])
 
                 df["Date received"]=df_fechas.dt.days
                 
@@ -65,29 +78,12 @@ def transform(df_aportado=False,id=False,prediccion=False):
 
                 df.drop('Date sent to company',inplace=True,axis=1)
 
-                return df
-            else:
-                if "Date sent to company" in df.columns:
-                    años=pd.to_datetime(df["Date received"],yearfirst=True)
-                    columna_mes=años.dt.month
 
-                    df_fechas=pd.to_datetime(df["Date sent to company"])-pd.to_datetime(df["Date received"])
-
-                    df["Date received"]=df_fechas.dt.days
-                    
-                    df['mes']=columna_mes
-
-                    df.drop('Date sent to company',inplace=True,axis=1)
-
-
-                return df # haremso que retorne el df aunque sinninguna transformacion, podriamos saltarnos este paso.
-        except:
-            print(Fore.RED +"error en transform1")
+            return df # haremso que retorne el df aunque sinninguna transformacion, podriamos saltarnos este paso.
     transform1(df,prediccion)
 
     def transform2(df:pd.DataFrame,prediccion=False)-> pd.DataFrame:
         # en este caso no necesitamos hacer lo de la prediccion ya que si tiene que darse esta tranformacion.
-        try:
             # en esta tranformacion buscamos realizar un cambio a numero de los datos sin usar un label encoder.
             listatemp=[]
             for i in df["Timely response?"].values:
@@ -96,10 +92,15 @@ def transform(df_aportado=False,id=False,prediccion=False):
                 else:
                     listatemp.append(False)
             listatemp=pd.Series(listatemp)
-            df["Timely response?"]=listatemp.astype(bool)
+            if prediccion:
+                if df['Timely response?'].values=="Yes":
+                    df['Timely response?']=True
+                elif df['Timely response?'].values=="No":
+                    df['Timely response?']=False              
+            else:
+                df["Timely response?"]=listatemp.astype(bool)
             return df
-        except:
-            print("error en tranform2")
+        
     transform2(df,prediccion)
 
     def transform3(df:pd.DataFrame,prediccion=False)-> pd.DataFrame:
@@ -270,7 +271,6 @@ def transform(df_aportado=False,id=False,prediccion=False):
 
         return df
     
-        print("error en transform5")
 
     transform5(df,prediccion)
 
