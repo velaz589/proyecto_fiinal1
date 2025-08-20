@@ -85,19 +85,21 @@ def transform(df_aportado=False,id=False,prediccion=False):
     def transform2(df:pd.DataFrame,prediccion=False)-> pd.DataFrame:
         # en este caso no necesitamos hacer lo de la prediccion ya que si tiene que darse esta tranformacion.
             # en esta tranformacion buscamos realizar un cambio a numero de los datos sin usar un label encoder.
-            listatemp=[]
-            for i in df["Timely response?"].values:
-                if i == "Yes":
-                    listatemp.append(True)
-                else:
-                    listatemp.append(False)
-            listatemp=pd.Series(listatemp)
             if prediccion:
                 if df['Timely response?'].values=="Yes":
                     df['Timely response?']=True
                 elif df['Timely response?'].values=="No":
-                    df['Timely response?']=False              
+                    df['Timely response?']=False   
             else:
+            
+                listatemp=[]
+                for i in df["Timely response?"].values:
+                    if i == "Yes":
+                        listatemp.append(True)
+                    else:
+                        listatemp.append(False)
+                listatemp=pd.Series(listatemp)
+                        
                 df["Timely response?"]=listatemp.astype(bool)
             return df
         
