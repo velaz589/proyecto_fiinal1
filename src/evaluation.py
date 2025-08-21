@@ -7,6 +7,8 @@ Evaluación del modelo y generación de métricas.
 # incluiremos aqui el codigo con los distintos modelos.
 
 import pickle
+import sys
+sys.path.append('../notebooks')
 from sklearn.metrics import classification_report
 
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score,\
