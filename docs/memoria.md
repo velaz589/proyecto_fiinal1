@@ -29,3 +29,7 @@ Entre esas fechas se ha realizado la limpieza de datos que quedara como sigue:
 ## Del 13 de agosto al 20
 Durante este tiempo se ha acabado de realizarla parte de preprocesado y se ha iniciado el desarrollo de la app. En este momento tengo la dificultad de hacer el diseño de la app y que funcione con el modelo que he estado haciendo. me he dado cuenta que realmente hay muchas variables adicionales que estan dentro de la app y que dificultan el uso de la misma. me estoy planteando hacer otro modelo con menos variables. ya que realmente a la hora querer hacer la comprobacion si necesitamos meter la empresa 
 O realizar un diseño de la app que permita ver las variables a seleccionar.
+
+
+## semana del 25 
+ahora me encuentro con el problema de que la demostracion si se deja un monton de opciones no es demasiado ergonomica lo que hace es que sea dificil de utilizar, no es realista su uso si tiene uno que poner el nombre entero de la empresa u otros problemas que dificultarian el uso de la mismo o laposible demostracion. 
