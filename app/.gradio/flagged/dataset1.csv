@@ -1,0 +1,3 @@
+_,output 0,output 1,timestamp
+## Este es el modo prueba. Aquí puedes ver una predicción automática con datos de ejemplo.,"{'Product': 'Payday loan', 'Sub-product': 'Mortgage', 'Issue': 'Disclosures', 'Sub-issue': 'Problem with fraud alerts', 'State': 'SC', 'ZIP code': np.float64(44425.0), 'Date received': np.int64(11), 'Company': 'Jim Bottin Enterprises, Inc', 'Company response': 'Closed', 'Timely response?': 'Yes', 'mes': np.int32(2)}","Resultado prueba:
+ El cliente reclamará posteriormente",2025-08-30 20:29:46.548423
