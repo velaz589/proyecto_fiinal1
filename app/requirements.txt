@@ -1,3 +1,0 @@
-# Requisitos para la demo de la aplicación
-streamlit
-gradio
