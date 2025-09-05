@@ -14,6 +14,10 @@ COPY install requirements.txt
 
 RUN pip install -r requirements.txt
 
+CMD []
+
+EXPOSE 8501
+
 
 
 
