@@ -17,7 +17,7 @@ RUN pip install -r requirements.txt
 
 
 
-FROM python:3.12
+'''FROM python:3.12
 
 # Create working directories
 RUN mkdir /app
@@ -34,4 +34,4 @@ COPY models/RF3\(0.79\ acu\) /models/
 
 # Copy and install dependencies
 COPY install/requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt'''
