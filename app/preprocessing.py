@@ -31,8 +31,10 @@ def main_df_fun():
         main_df = pd.read_csv("../data/quejas-clientes.csv")
 
     try:
-    zip_code=pd.read_csv("c:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/data/zip_code.csv")
+        zip_code=pd.read_csv("c:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/data/zip_code.csv")
     except:
+        zip_code=pd.read_csv("../data/zip_code.csv")
+
         
 
     df=main_df.copy()
