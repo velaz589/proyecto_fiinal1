@@ -23,12 +23,14 @@ def guardar_modelo(nombre:str,modelo):
 def recuperacion(nombre:str):
 
     try:
-
-        with open(f'C:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/models/{nombre}', "rb") as archivo_entrada:
-            pipeline_importada = pickle.load(archivo_entrada)
-    except:
         with open(f'../models/{nombre}', "rb") as archivo_entrada:
             pipeline_importada = pickle.load(archivo_entrada)
+
+        
+    except:
+        with open(f'C:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/models/{nombre}', "rb") as archivo_entrada:
+            pipeline_importada = pickle.load(archivo_entrada)
+        
 
     
 
