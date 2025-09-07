@@ -8,6 +8,7 @@ import sys
 sys.path.append('c:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/notebooks')
 sys.path.append('c:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/models')
 sys.path.append('../notebooks')
+sys.path.append('.../models')
 import fuentes as ft
 import gradio as gr
 import evaluation
