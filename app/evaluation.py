@@ -17,18 +17,18 @@ plt=ft.plt
 
 def guardar_modelo(nombre:str,modelo):
 
-    with open(f'../models/{nombre}', "wb") as archivo_salida:
+    with open(f'C:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/models/{nombre}', "wb") as archivo_salida:
         pickle.dump(modelo.best_estimator_, archivo_salida)
 
 def recuperacion(nombre:str):
 
-    with open(f'../models/{nombre}', "rb") as archivo_entrada:
+    with open(f'C:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/models/{nombre}', "rb") as archivo_entrada:
         pipeline_importada = pickle.load(archivo_entrada)
     
         
     return pipeline_importada
 
-
+#C:\Users\nevaz\Desktop\analisis_de_datos\proyecto_fiinal1\models\RF3(0.79 acu)
 def metricas(clf,y_test,X_test,predictions=False,auc:bool=False,precision:bool=False):
     print(classification_report(y_test,predictions))
     if predictions:

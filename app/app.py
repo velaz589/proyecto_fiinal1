@@ -4,29 +4,34 @@ Aplicación web para el modelo entrenado final.
 """
 
 # Aquí va el código de la aplicación web
-import gradio as gr
 import sys
-sys.path.append('../notebooks')
-
-import fuentes as ft 
-
-
+sys.path.append('c:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/notebooks')
+sys.path.append('c:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/models')
+import fuentes as ft
 import gradio as gr
+import evaluation
 import preprocessing
 
-def modo_manual():  # tus argumentos aquí
+
+sys.path.append('.../models')
+
+#import fuentes as ft 
+
+
+
+import preprocessing
+
+def modo_manual(Complaint_ID, Product, Sub_product, Issue, State, ZIP_code, Date_received, Company, Company_response, Timely_response, mes):
     # lógica para modo manual
-    #RF3(0.79 acu)
     return "Resultado manual", 0
 
 def modo_prueba(_=None):
     # aqui se cogeran aleatoriamente los nombres y se procurara hacer una prediccion sobre el listado aleatorio 
     import random
     import pandas as pd
-    import sys
-    sys.path.append('../notebooks')
+    
 
-    import fuentes as ft
+    #import fuentes as ft
 
     dic={}
     df=preprocessing.main_df_fun()[-1]
