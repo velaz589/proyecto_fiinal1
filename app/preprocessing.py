@@ -25,8 +25,16 @@ def main_df_fun():
     tambien recoge una segunda tabla con el codigo postal en principio esta indicado con un archivo. 
 
     devuelve una tupla(main_df,zip_code y el df copiado)'''
-    main_df = pd.read_csv("c:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/data/quejas-clientes.csv")
+    try:
+        main_df = pd.read_csv("c:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/data/quejas-clientes.csv")
+    except:
+        main_df = pd.read_csv("../data/quejas-clientes.csv")
+
+    try:
     zip_code=pd.read_csv("c:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/data/zip_code.csv")
+    except:
+        
+
     df=main_df.copy()
 
     return (main_df,zip_code,df)
