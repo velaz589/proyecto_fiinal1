@@ -26,6 +26,9 @@ import numpy as np
 
 sys.path.append('c:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/notebooks')
 sys.path.append('c:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/models')
+sys.path.append('../models')
+sys.path.append('../data')
+
 import fuentes as ft
 import evaluation
 import preprocessing
