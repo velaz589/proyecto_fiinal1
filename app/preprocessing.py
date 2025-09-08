@@ -28,12 +28,12 @@ def main_df_fun():
     try:
         main_df = pd.read_csv("c:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/data/quejas-clientes.csv")
     except:
-        main_df = pd.read_csv("../data/quejas-clientes.csv")
+        main_df = pd.read_csv("./data/quejas-clientes.csv")
 
     try:
         zip_code=pd.read_csv("c:/Users/nevaz/Desktop/analisis_de_datos/proyecto_fiinal1/data/zip_code.csv")
     except:
-        zip_code=pd.read_csv("../data/zip_code.csv")
+        zip_code=pd.read_csv("./data/zip_code.csv")
 
         
 

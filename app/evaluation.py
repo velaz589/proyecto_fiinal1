@@ -23,7 +23,7 @@ def guardar_modelo(nombre:str,modelo):
 def recuperacion(nombre:str):
 
     try:
-        with open(f'../models/{nombre}', "rb") as archivo_entrada:
+        with open(f'./models/{nombre}', "rb") as archivo_entrada:
             pipeline_importada = pickle.load(archivo_entrada)
 
         
